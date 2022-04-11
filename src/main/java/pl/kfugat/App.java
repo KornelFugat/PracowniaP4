@@ -1,16 +1,12 @@
-package pl.kfugat.creditcard;
+package pl.kfugat;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import pl.kfugat.creditcard.NameProvider;
+import pl.kfugat.productcatalog.MapProductStorage;
 import pl.kfugat.productcatalog.ProductCatalog;
-import pl.kfugat.productcatalog.ProductData;
+import pl.kfugat.productcatalog.ProductStorage;
 
 import java.math.BigDecimal;
 
@@ -27,8 +23,13 @@ public class App {
     }
 
     @Bean
-    ProductCatalog createMyProductCatalog() {
-        ProductCatalog productCatalog = new ProductCatalog();
+    ProductStorage createMyProductStorage() {
+        return new MapProductStorage();
+    }
+
+    @Bean
+    ProductCatalog createMyProductCatalog(ProductStorage productStorage) {
+        ProductCatalog productCatalog = new ProductCatalog(productStorage);
         String productId1 = productCatalog.addProduct("lego-set-1", "Nice Lego set");
         productCatalog.assignImage(productId1, "https://picsum.photos/id/237/200/300");
         productCatalog.assignPrice(productId1, BigDecimal.TEN);
