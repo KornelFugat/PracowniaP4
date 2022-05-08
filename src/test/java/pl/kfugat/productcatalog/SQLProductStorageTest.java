@@ -1,6 +1,7 @@
 package pl.kfugat.productcatalog;
 
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,15 +15,40 @@ public class SQLProductStorageTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    ProductCatalog productCatalog;
+    @BeforeEach
+    void beforeEach() {
+        jdbcTemplate.execute(
+                "DROP TABLE `product_catalog__products` IF EXISTS"
+        );
+        jdbcTemplate.execute(
+                "CREATE TABLE `product_catalog__products` (" +
+                        "`id` varchar(100) NOT NULL, " +
+                        "PRIMARY KEY(id)" +
+                        ")"
+        );
+    }
 
     @Test
     void example() {
-        String version = jdbcTemplate.queryForObject(
-                "Select vesrion()",
-                String.class);
+        String result = jdbcTemplate
+                .queryForObject("Select NOW()", String.class);
     }
+
+    @Test
+    void itCountsProducts() {
+        int productsCount = jdbcTemplate
+                .queryForObject(
+                        "select " +
+                                "count(*) " +
+                                "from " +
+                                "`product_catalog__products`"
+                        , Integer.class);
+
+        assertEquals(0, productsCount);
+    }
+
+
+
     @Test
     void itAllowsToStoreAndLoadProduct() {
         ProductData product = thereIsExampleProduct();

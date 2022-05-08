@@ -28,8 +28,4 @@ public class SQLProductStorage implements ProductStorage {
         return null;
     }
 
-    @Override
-    public List<ProductData> allPublished() {
-        return null;
-    }
 }
