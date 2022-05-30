@@ -7,8 +7,11 @@ import pl.kfugat.creditcard.NameProvider;
 import pl.kfugat.productcatalog.MapProductStorage;
 import pl.kfugat.productcatalog.ProductCatalog;
 import pl.kfugat.productcatalog.ProductStorage;
+import pl.kfugat.productcatalog.ProductData;
+import pl.kfugat.sales.*;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 
 @SpringBootApplication
 public class App {
@@ -41,5 +44,24 @@ public class App {
         productCatalog.publish(productId2);
 
         return productCatalog;
+    }
+
+    @Bean
+    Sales createSales(ProductDetailsProvider productDetailsProvider) {
+        return new Sales(
+                new CartStorage(),
+                productDetailsProvider
+        );
+    }
+
+    @Bean
+    ProductDetailsProvider detailsProvider(ProductCatalog catalog) {
+        return (productId -> {
+            ProductData data = catalog.getDetails(productId);
+            return java.util.Optional.of(new ProductDetails(
+                    data.getId(),
+                    data.getName(),
+                    data.getPrice()));
+        });
     }
 }
